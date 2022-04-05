@@ -7,6 +7,26 @@ from .models import Product
 from .models import ProductCategory
 from .models import Restaurant
 from .models import RestaurantMenuItem
+from .models import Order
+from .models import ProductItem
+
+
+class ProductItemInline(admin.TabularInline):
+    model = ProductItem
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'firstname',
+        'lastname',
+        'address',
+        'phonenumber',
+    ]
+    inlines = [
+        ProductItemInline
+    ]
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
