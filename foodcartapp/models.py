@@ -8,7 +8,7 @@ class ProductItem(models.Model):
         'Order',
         on_delete=models.CASCADE,
         verbose_name='Заказ',
-        related_name='product_items',
+        related_name='products',
     )
     product = models.ForeignKey(
         'Product',
@@ -16,7 +16,7 @@ class ProductItem(models.Model):
         verbose_name='Продукт',
         related_name='product_items',
     )
-    amount = models.IntegerField('Количество')
+    quantity = models.IntegerField('Количество')
 
 
 class Order(models.Model):

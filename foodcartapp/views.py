@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.serializers import ModelSerializer, ListField
 
 
 from .models import Product, Order, ProductItem
@@ -59,14 +60,26 @@ def product_list_api(request):
     })
 
 
+class ProductItemSerializer(ModelSerializer):
+    class Meta:
+        model = ProductItem
+        fields = ['product', 'quantity']
+
+
+class OrderSerializer(ModelSerializer):
+    products = ListField(child=ProductItemSerializer(), allow_empty=False)
+
+    class Meta:
+        model = Order
+        fields = ['firstname', 'lastname', 'phonenumber', 'address', 'products']
+
+
 @api_view(['POST'])
 def register_order(request):
     incoming_order = request.data
 
-    if not incoming_order.get('products') \
-        or not incoming_order['products'] \
-        or not isinstance(incoming_order['products'], list):
-            return Response({'error': 'products key not present or not list'})
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
     order = Order.objects.create(
         firstname=incoming_order['firstname'],
@@ -79,6 +92,6 @@ def register_order(request):
         ProductItem.objects.create(
             order=order,
             product=product,
-            amount=product_item['quantity'],
+            quantity=product_item['quantity'],
         )
     return Response({})
