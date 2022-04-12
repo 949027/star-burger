@@ -18,12 +18,18 @@ class ProductItem(models.Model):
         related_name='product_items',
     )
     quantity = models.IntegerField('Количество')
+    price = models.DecimalField(
+        'Стоимость',
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
 
 
 class OrderQuerySet(models.QuerySet):
     def calculate_total_price(self):
         return self.annotate(
-            total_price=Sum(F('products__quantity') * F('products__product__price'))
+            total_price=Sum(F('products__quantity') * F('products__price'))
         )
 
 
@@ -38,7 +44,7 @@ class Order(models.Model):
     )
     phonenumber = PhoneNumberField('Телефон', db_index=True)
     address = models.CharField('Адрес', max_length=200)
-    processed = models.BooleanField('Заказ обработан')
+    processed = models.BooleanField('Заказ обработан', default=False)
 
     objects = OrderQuerySet.as_manager()
 
