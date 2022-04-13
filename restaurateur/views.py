@@ -6,9 +6,11 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 from foodcartapp.models import Product, Restaurant, Order
+from star_burger.settings import ALLOWED_HOSTS
 
 
 class Login(forms.Form):
@@ -100,5 +102,9 @@ def view_orders(request):
     unprocessed_orders = Order.objects.filter(processed=False)\
         .calculate_total_price()
     return render(request, template_name='order_items.html', context={
-        'unprocessed_orders': unprocessed_orders
+        'unprocessed_orders': unprocessed_orders,
+        'redirect_url': request.path if url_has_allowed_host_and_scheme(
+            request.path,
+            ALLOWED_HOSTS,
+        ) else ''
     })
