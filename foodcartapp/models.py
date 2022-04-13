@@ -56,9 +56,21 @@ class Order(models.Model):
         choices=(('new', 'Необработанный'), ('processed', 'Обработан'),
                  ('cooking', 'Готовится'), ('ready', 'Готов'))
     )
+    payment_type = models.CharField(
+        'Способ оплаты',
+        max_length=20,
+        db_index=True,
+        default='previously',
+        choices=(
+            ('previously', 'Сразу'),
+            ('cash', 'Наличные'),
+            ('card', 'Банковская карта')
+        )
+    )
     registrated_at = models.DateTimeField(
         'Заказ зарегистрирован в',
-        default=datetime.datetime.now
+        default=datetime.datetime.now,
+        db_index=True,
     )
     called_at = models.DateTimeField('Звонок в', blank=True, null=True)
     delivered_at = models.DateTimeField('Доставлено в', blank=True, null=True)

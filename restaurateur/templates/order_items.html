@@ -15,6 +15,7 @@
     <tr>
       <th>ID заказа</th>
       <th>Статус заказа</th>
+      <th>Способ оплаты</th>
       <th>Клиент</th>
       <th>Телефон</th>
       <th>Адрес доставки</th>
@@ -27,6 +28,7 @@
       <tr>
         <td>{{order.id}}</td>
         <td>{{order.get_status_display}}</td>
+        <td>{{order.get_payment_type_display}}</td>
         <td>{{order.lastname}} {{order.firstname}}</td>
         <td>{{order.phonenumber}}</td>
         <td>{{order.address}}</td>
