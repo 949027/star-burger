@@ -45,7 +45,14 @@ class Order(models.Model):
     )
     phonenumber = PhoneNumberField('Телефон', db_index=True)
     address = models.CharField('Адрес', max_length=200)
-    processed = models.BooleanField('Заказ обработан', default=False)
+    status = models.CharField(
+        'Статус заказа',
+        max_length=20,
+        db_index=True,
+        default='new',
+        choices=(('new', 'Необработанный'), ('processed', 'Обработан'),
+                 ('cooking', 'Готовится'), ('ready', 'Готов'))
+    )
 
     objects = OrderQuerySet.as_manager()
 
