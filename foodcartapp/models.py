@@ -45,6 +45,7 @@ class Order(models.Model):
     )
     phonenumber = PhoneNumberField('Телефон', db_index=True)
     address = models.CharField('Адрес', max_length=200)
+    comment = models.TextField('Комментарий', blank=True)
     status = models.CharField(
         'Статус заказа',
         max_length=20,
