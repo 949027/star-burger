@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
@@ -54,6 +56,12 @@ class Order(models.Model):
         choices=(('new', 'Необработанный'), ('processed', 'Обработан'),
                  ('cooking', 'Готовится'), ('ready', 'Готов'))
     )
+    registrated_at = models.DateTimeField(
+        'Заказ зарегистрирован в',
+        default=datetime.datetime.now
+    )
+    called_at = models.DateTimeField('Звонок в', blank=True, null=True)
+    delivered_at = models.DateTimeField('Доставлено в', blank=True, null=True)
 
     objects = OrderQuerySet.as_manager()
 
