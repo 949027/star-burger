@@ -3,14 +3,19 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
-
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.utils.http import url_has_allowed_host_and_scheme
-
+from environs import Env
+from geopy import distance
+import requests
 
 from foodcartapp.models import Product, Restaurant, Order
 from star_burger.settings import ALLOWED_HOSTS
+
+
+env = Env()
+env.read_env()
 
 
 class Login(forms.Form):
@@ -97,10 +102,60 @@ def view_restaurants(request):
     })
 
 
+def fetch_coordinates(apikey, address):
+    base_url = "https://geocode-maps.yandex.ru/1.x"
+    response = requests.get(base_url, params={
+        "geocode": address,
+        "apikey": apikey,
+        "format": "json",
+    })
+    response.raise_for_status()
+    found_places = response.json()['response']['GeoObjectCollection']['featureMember']
+
+    if not found_places:
+        return None
+
+    most_relevant = found_places[0]
+    lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
+    return lon, lat
+
+
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
+    apikey = env('YANDEX_API_KEY')
+
     unprocessed_orders = Order.objects.filter(status='new')\
         .calculate_total_price()
+
+    for order in unprocessed_orders:
+        client_coordinates = fetch_coordinates(apikey, order.address)
+        suggested_restaurants = []
+        order_product_set = set()
+        for product_item in order.products.all():
+            order_product_set.add(product_item.product)
+
+        for restaurant in Restaurant.objects.all():
+            restaurant_product_set = set()
+            for product_item in restaurant.menu_items.all():
+                restaurant_product_set.add(product_item.product)
+
+            if restaurant_product_set.union(order_product_set) == restaurant_product_set:
+                restaurant_coordinates = fetch_coordinates(
+                    apikey,
+                    restaurant.address
+                )
+                restaurant.distance = round(distance.distance(
+                    client_coordinates,
+                    restaurant_coordinates
+                ).km, 2)
+                suggested_restaurants.append(
+                    (restaurant.name, restaurant.distance)
+                )
+        order.suggested_restaurants = sorted(
+            suggested_restaurants,
+            key=lambda i: i[1]
+        )
+
     return render(request, template_name='order_items.html', context={
         'unprocessed_orders': unprocessed_orders,
         'redirect_url': request.path if url_has_allowed_host_and_scheme(

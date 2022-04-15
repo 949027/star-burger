@@ -30,6 +30,7 @@ class ProductItem(models.Model):
 
 
 class OrderQuerySet(models.QuerySet):
+
     def calculate_total_price(self):
         return self.annotate(
             total_price=Sum(F('products__quantity') * F('products__price'))
@@ -66,6 +67,14 @@ class Order(models.Model):
             ('cash', 'Наличные'),
             ('card', 'Банковская карта')
         )
+    )
+    restaurant = models.ForeignKey(
+        'Restaurant',
+        verbose_name='Ресторан',
+        related_name='orders',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     registrated_at = models.DateTimeField(
         'Заказ зарегистрирован в',

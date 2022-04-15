@@ -21,6 +21,7 @@
       <th>Адрес доставки</th>
       <th>Комментарий</th>
       <th>Сумма заказа</th>
+      <th>Рестораны</th>
       <th>Ссылка на админку</th>
     </tr>
 
@@ -34,6 +35,11 @@
         <td>{{order.address}}</td>
         <td>{{order.comment}}</td>
         <td>{{order.total_price}}</td>
+        <td><details><summary>Развернуть</summary>
+          {% for restaurant in order.suggested_restaurants %}
+          {{restaurant.0}} - {{restaurant.1}} км
+          {% endfor %}
+        </details></td>
         <td><a href={% url 'admin:foodcartapp_order_change' object_id=order.id %}?next={{redirect_url|urlencode}}>Редактировать</a></td>
       </tr>
     {% endfor %}
