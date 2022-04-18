@@ -119,17 +119,18 @@ def fetch_coordinates(apikey, address):
 def view_orders(request):
     unprocessed_orders = Order.objects.filter(status='new')\
         .calculate_total_price()
+    restaurants = Restaurant.objects.all()
 
     for order in unprocessed_orders:
         client_coordinates = fetch_coordinates(settings.APIKEY, order.address)
         suggested_restaurants = []
         order_product_set = set()
-        for product_item in order.products.all():
+        for product_item in order.products.select_related('product').all():
             order_product_set.add(product_item.product)
 
-        for restaurant in Restaurant.objects.all():
+        for restaurant in restaurants:
             restaurant_product_set = set()
-            for product_item in restaurant.menu_items.all():
+            for product_item in restaurant.menu_items.select_related('product').all():
                 restaurant_product_set.add(product_item.product)
 
             if restaurant_product_set.union(order_product_set) == restaurant_product_set:
