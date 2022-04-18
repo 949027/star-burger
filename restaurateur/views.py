@@ -6,16 +6,11 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.utils.http import url_has_allowed_host_and_scheme
-from environs import Env
 from geopy import distance
 import requests
 
 from foodcartapp.models import Product, Restaurant, Order
-from star_burger.settings import ALLOWED_HOSTS
-
-
-env = Env()
-env.read_env()
+from django.conf import settings
 
 
 class Login(forms.Form):
@@ -122,13 +117,11 @@ def fetch_coordinates(apikey, address):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    apikey = env('YANDEX_API_KEY')
-
     unprocessed_orders = Order.objects.filter(status='new')\
         .calculate_total_price()
 
     for order in unprocessed_orders:
-        client_coordinates = fetch_coordinates(apikey, order.address)
+        client_coordinates = fetch_coordinates(settings.APIKEY, order.address)
         suggested_restaurants = []
         order_product_set = set()
         for product_item in order.products.all():
@@ -141,7 +134,7 @@ def view_orders(request):
 
             if restaurant_product_set.union(order_product_set) == restaurant_product_set:
                 restaurant_coordinates = fetch_coordinates(
-                    apikey,
+                    settings.APIKEY,
                     restaurant.address
                 )
                 restaurant.distance = round(distance.distance(
@@ -160,6 +153,6 @@ def view_orders(request):
         'unprocessed_orders': unprocessed_orders,
         'redirect_url': request.path if url_has_allowed_host_and_scheme(
             request.path,
-            ALLOWED_HOSTS,
+            settings.ALLOWED_HOSTS,
         ) else ''
     })
