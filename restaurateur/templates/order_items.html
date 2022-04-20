@@ -37,7 +37,11 @@
         <td>{{order.total_price}}</td>
         <td><details><summary>Развернуть</summary>
           {% for restaurant in order.suggested_restaurants %}
-          {{restaurant.0}} - {{restaurant.1}} км
+            {{restaurant.0}}
+            {% if restaurant.1 %}
+              - {{restaurant.1}} км
+            {% endif %}
+            <br>
           {% endfor %}
         </details></td>
         <td><a href={% url 'admin:foodcartapp_order_change' object_id=order.id %}?next={{redirect_url|urlencode}}>Редактировать</a></td>

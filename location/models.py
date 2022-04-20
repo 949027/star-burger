@@ -11,6 +11,9 @@ class Place(models.Model):
         default=datetime.datetime.now,
     )
 
+    def __str__(self):
+        return self.address
+
     class Meta:
         verbose_name = 'Место'
         verbose_name_plural = 'Места'

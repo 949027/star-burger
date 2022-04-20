@@ -5,6 +5,8 @@ from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F, Sum
 
+from location.models import Place
+
 
 class ProductItem(models.Model):
     order = models.ForeignKey(
@@ -48,6 +50,14 @@ class Order(models.Model):
     )
     phonenumber = PhoneNumberField('Телефон', db_index=True)
     address = models.CharField('Адрес', max_length=200)
+    location = models.ForeignKey(
+        Place,
+        verbose_name='Месторасположение',
+        related_name='orders',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     comment = models.TextField('Комментарий', blank=True)
     status = models.CharField(
         'Статус заказа',
@@ -102,6 +112,14 @@ class Restaurant(models.Model):
     address = models.CharField(
         'адрес',
         max_length=100,
+        blank=True,
+    )
+    location = models.ForeignKey(
+        Place,
+        verbose_name='Месторасположение',
+        related_name='restaurants',
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
     )
     contact_phone = models.CharField(
