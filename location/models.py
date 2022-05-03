@@ -4,8 +4,8 @@ from django.db import models
 
 class Place(models.Model):
     address = models.CharField('Адрес', max_length=200, unique=True)
-    lat = models.DecimalField('Широта', max_digits=8, decimal_places=6)
-    lon = models.DecimalField('Долгота', max_digits=8, decimal_places=6)
+    lat = models.DecimalField('Широта', max_digits=8, decimal_places=6, null=True)
+    lon = models.DecimalField('Долгота', max_digits=8, decimal_places=6, null=True)
     update_date = models.DateTimeField(
         'Дата обновления',
         default=datetime.datetime.now,
