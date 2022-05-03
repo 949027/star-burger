@@ -19,7 +19,7 @@ class ProductItem(models.Model):
         'Product',
         on_delete=models.CASCADE,
         verbose_name='Продукт',
-        related_name='product_items',
+        related_name='items',
     )
     quantity = models.IntegerField('Количество')
     price = models.DecimalField(
