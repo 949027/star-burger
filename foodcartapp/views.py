@@ -106,7 +106,7 @@ def register_order(request):
     serializer.is_valid(raise_exception=True)
 
     client_coordinates = fetch_coordinates(
-        settings.APIKEY,
+        settings.YANDEX_API_KEY,
         incoming_order['address']
     )
     if client_coordinates:
