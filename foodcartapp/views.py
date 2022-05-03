@@ -92,10 +92,11 @@ def register_order(request):
         incoming_order['address']
     )
     if client_coordinates:
+        lat, lon = client_coordinates
         place, _ = Place.objects.get_or_create(
             address=incoming_order['address'],
-            lat=client_coordinates[0],
-            lon=client_coordinates[1],
+            lat=lat,
+            lon=lon,
         )
     else:
         place = None
