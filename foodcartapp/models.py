@@ -52,7 +52,7 @@ class Order(models.Model):
     )
     phonenumber = PhoneNumberField('Телефон', db_index=True)
     address = models.CharField('Адрес', max_length=200)
-    location = models.ForeignKey(
+    place = models.ForeignKey(
         Place,
         verbose_name='Месторасположение',
         related_name='orders',
@@ -116,7 +116,7 @@ class Restaurant(models.Model):
         max_length=100,
         blank=True,
     )
-    location = models.ForeignKey(
+    place = models.ForeignKey(
         Place,
         verbose_name='Месторасположение',
         related_name='restaurants',

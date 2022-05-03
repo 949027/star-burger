@@ -105,7 +105,7 @@ def register_order(request):
         firstname=incoming_order['firstname'],
         lastname=incoming_order['lastname'],
         address=incoming_order['address'],
-        location=place,
+        place=place,
         phonenumber=incoming_order['phonenumber'],
     )
     for product_item in incoming_order['products']:

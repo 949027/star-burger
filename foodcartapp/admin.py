@@ -26,7 +26,7 @@ class OrderAdmin(admin.ModelAdmin):
         'phonenumber',
     ]
     raw_id_fields = [
-        'location',
+        'place',
     ]
     inlines = [
         ProductItemInline
