@@ -4,6 +4,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F, Sum
+from geopy import distance
 
 from location.models import Place
 
@@ -39,6 +40,35 @@ class OrderQuerySet(models.QuerySet):
         return self.annotate(
             total_price=Sum(F('product_items__quantity') * F('product_items__price'))
         )
+
+    def suggest_restaurants(self):
+        orders = self
+        for order in orders:
+            suggested_restaurants = []
+            order_product_set = set()
+            restaurants = Restaurant.objects.all()
+            for product_item in order.product_items.select_related('product').all():
+                order_product_set.add(product_item.product)
+
+            for restaurant in restaurants:
+                restaurant_product_set = set()
+                for product_item in restaurant.menu_items.select_related('product').all():
+                    restaurant_product_set.add(product_item.product)
+
+                if restaurant_product_set.union(order_product_set) == restaurant_product_set:
+                    if order.place:
+                        restaurant.distance = round(distance.distance(
+                            (order.place.lon, order.place.lat),
+                            (restaurant.place.lon, restaurant.place.lat),
+                        ).km, 2)
+                    else:
+                        restaurant.distance = 0
+
+                    suggested_restaurants.append(
+                        (restaurant.name, restaurant.distance)
+                    )
+            order.suggested_restaurants = sorted(suggested_restaurants, key=lambda i: i[1])
+        return orders
 
 
 class Order(models.Model):

@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.utils.http import url_has_allowed_host_and_scheme
-from geopy import distance
 
 from foodcartapp.models import Product, Restaurant, Order
 from django.conf import settings
@@ -99,36 +98,7 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     unprocessed_orders = Order.objects.filter(status='new')\
-        .calculate_prices()
-    restaurants = Restaurant.objects.all()
-
-    for order in unprocessed_orders:
-        suggested_restaurants = []
-        order_product_set = set()
-        for product_item in order.product_items.select_related('product').all():
-            order_product_set.add(product_item.product)
-
-        for restaurant in restaurants:
-            restaurant_product_set = set()
-            for product_item in restaurant.menu_items.select_related('product').all():
-                restaurant_product_set.add(product_item.product)
-
-            if restaurant_product_set.union(order_product_set) == restaurant_product_set:
-                if order.place:
-                    restaurant.distance = round(distance.distance(
-                        (order.place.lon, order.place.lat),
-                        (restaurant.place.lon, restaurant.place.lat),
-                    ).km, 2)
-                else:
-                    restaurant.distance = 0
-
-                suggested_restaurants.append(
-                    (restaurant.name, restaurant.distance)
-                )
-        order.suggested_restaurants = sorted(
-            suggested_restaurants,
-            key=lambda i: i[1]
-        )
+        .calculate_prices().suggest_restaurants()
 
     return render(request, template_name='order_items.html', context={
         'unprocessed_orders': unprocessed_orders,
