@@ -13,7 +13,7 @@ class ProductItem(models.Model):
         'Order',
         on_delete=models.CASCADE,
         verbose_name='Заказ',
-        related_name='products',
+        related_name='product_items',
     )
     product = models.ForeignKey(
         'Product',
@@ -35,7 +35,7 @@ class OrderQuerySet(models.QuerySet):
 
     def calculate_total_price(self):
         return self.annotate(
-            total_price=Sum(F('products__quantity') * F('products__price'))
+            total_price=Sum(F('product_items__quantity') * F('product_items__price'))
         )
 
 

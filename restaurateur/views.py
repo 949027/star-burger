@@ -105,7 +105,7 @@ def view_orders(request):
     for order in unprocessed_orders:
         suggested_restaurants = []
         order_product_set = set()
-        for product_item in order.products.select_related('product').all():
+        for product_item in order.product_items.select_related('product').all():
             order_product_set.add(product_item.product)
 
         for restaurant in restaurants:
