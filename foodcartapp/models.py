@@ -21,7 +21,10 @@ class ProductItem(models.Model):
         verbose_name='Продукт',
         related_name='items',
     )
-    quantity = models.IntegerField('Количество')
+    quantity = models.IntegerField(
+        'Количество',
+        validators=[MinValueValidator(1)],
+    )
     price = models.DecimalField(
         'Стоимость',
         max_digits=8,
