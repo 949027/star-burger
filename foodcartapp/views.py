@@ -114,6 +114,7 @@ def register_order(request):
             order=order,
             product=product,
             quantity=product_item['quantity'],
+            price=product.price * product_item['quantity'],
         )
     serializer = OrderSerializer(order)
 
