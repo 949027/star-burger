@@ -56,7 +56,7 @@ class OrderQuerySet(models.QuerySet):
                     restaurant_product_set.add(product_item.product)
 
                 if restaurant_product_set.union(order_product_set) == restaurant_product_set:
-                    if order.place:
+                    if order.place.lon and order.place.lat:
                         restaurant.distance = round(distance.distance(
                             (order.place.lon, order.place.lat),
                             (restaurant.place.lon, restaurant.place.lat),

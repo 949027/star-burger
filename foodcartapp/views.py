@@ -99,7 +99,9 @@ def register_order(request):
             lon=lon,
         )
     else:
-        place = None
+        place, _ = Place.objects.get_or_create(
+            address=incoming_order['address'],
+        )
 
     order = Order.objects.create(
         firstname=incoming_order['firstname'],
