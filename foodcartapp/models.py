@@ -103,9 +103,7 @@ class Order(models.Model):
         'Способ оплаты',
         max_length=20,
         db_index=True,
-        default='previously',
         choices=(
-            ('previously', 'Сразу'),
             ('cash', 'Наличные'),
             ('card', 'Банковская карта')
         )
