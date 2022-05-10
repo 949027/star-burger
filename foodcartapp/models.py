@@ -43,10 +43,10 @@ class OrderQuerySet(models.QuerySet):
 
     def suggest_restaurants(self):
         orders = self
+        restaurants = Restaurant.objects.all()
         for order in orders:
             suggested_restaurants = []
             order_product_set = set()
-            restaurants = Restaurant.objects.all()
             for product_item in order.product_items.select_related('product').all():
                 order_product_set.add(product_item.product)
 
