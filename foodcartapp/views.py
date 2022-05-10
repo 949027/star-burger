@@ -87,21 +87,17 @@ def register_order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    client_coordinates = fetch_coordinates(
-        settings.YANDEX_API_KEY,
-        incoming_order['address']
+    place, created = Place.objects.get_or_create(
+        address=incoming_order['address'],
     )
-    if client_coordinates:
-        lat, lon = client_coordinates
-        place, _ = Place.objects.get_or_create(
-            address=incoming_order['address'],
-            lat=lat,
-            lon=lon,
+    if created:
+        client_coordinates = fetch_coordinates(
+            settings.YANDEX_API_KEY,
+            incoming_order['address']
         )
-    else:
-        place, _ = Place.objects.get_or_create(
-            address=incoming_order['address'],
-        )
+        if client_coordinates:
+            place.lat, place.lon = client_coordinates
+            place.save()
 
     order = Order.objects.create(
         firstname=incoming_order['firstname'],
