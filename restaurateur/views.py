@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.utils.http import url_has_allowed_host_and_scheme
+from geopy import distance
 
 from foodcartapp.models import Product, Restaurant, Order
 from django.conf import settings
@@ -99,6 +100,16 @@ def view_restaurants(request):
 def view_orders(request):
     unprocessed_orders = Order.objects.filter(status='new')\
         .calculate_prices().suggest_restaurants()
+
+    for order in unprocessed_orders:
+        distances = []
+        for restaurant in order.suggested_restaurants:
+            restaurant_distance = round(distance.distance(
+                (order.place.lon, order.place.lat),
+                (restaurant.place.lon, restaurant.place.lat),
+            ).km, 2)
+            distances.append((restaurant.name, restaurant_distance))
+        order.distances = sorted(distances, key=lambda i: i[1])
 
     return render(request, template_name='order_items.html', context={
         'unprocessed_orders': unprocessed_orders,

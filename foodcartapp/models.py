@@ -4,7 +4,6 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F, Sum
-from geopy import distance
 
 from location.models import Place
 
@@ -56,18 +55,9 @@ class OrderQuerySet(models.QuerySet):
                     restaurant_product_set.add(product_item.product)
 
                 if restaurant_product_set.union(order_product_set) == restaurant_product_set:
-                    if order.place.lon and order.place.lat:
-                        restaurant.distance = round(distance.distance(
-                            (order.place.lon, order.place.lat),
-                            (restaurant.place.lon, restaurant.place.lat),
-                        ).km, 2)
-                    else:
-                        restaurant.distance = 0
+                    suggested_restaurants.append(restaurant)
 
-                    suggested_restaurants.append(
-                        (restaurant.name, restaurant.distance)
-                    )
-            order.suggested_restaurants = sorted(suggested_restaurants, key=lambda i: i[1])
+                order.suggested_restaurants = suggested_restaurants
         return orders
 
 

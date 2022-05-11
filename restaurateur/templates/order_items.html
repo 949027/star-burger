@@ -36,10 +36,10 @@
         <td>{{order.comment}}</td>
         <td>{{order.total_price}}</td>
         <td><details><summary>Развернуть</summary>
-          {% for restaurant in order.suggested_restaurants %}
-            {{restaurant.0}}
-            {% if restaurant.1 %}
-              - {{restaurant.1}} км
+          {% for distance in order.distances %}
+            {{distance.0}}
+            {% if distance.1 %}
+              - {{distance.1}} км
             {% endif %}
             <br>
           {% endfor %}
