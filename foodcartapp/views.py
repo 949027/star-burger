@@ -82,10 +82,10 @@ class OrderSerializer(ModelSerializer):
 @api_view(['POST'])
 @transaction.atomic
 def register_order(request):
-    incoming_order = request.data
-
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+
+    incoming_order = serializer.validated_data
 
     place, created = Place.objects.get_or_create(
         address=incoming_order['address'],
@@ -106,14 +106,17 @@ def register_order(request):
         place=place,
         phonenumber=incoming_order['phonenumber'],
     )
-    for product_item in incoming_order['products']:
-        product = Product.objects.get(id=product_item['product'])
-        ProductItem.objects.create(
+    product_items = [
+        ProductItem(
             order=order,
-            product=product,
+            product=product_item['product'],
             quantity=product_item['quantity'],
-            price=product.price * product_item['quantity'],
+            price=product_item['product'].price * product_item['quantity'],
         )
+        for product_item in incoming_order['products']
+    ]
+    ProductItem.objects.bulk_create(product_items)
+
     serializer = OrderSerializer(order)
 
     return Response(serializer.data)
