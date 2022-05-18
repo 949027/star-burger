@@ -41,17 +41,17 @@ class OrderQuerySet(models.QuerySet):
         )
 
     def suggest_restaurants(self):
-        orders = self
-        restaurants = Restaurant.objects.all()
+        orders = self.prefetch_related('product_items__product')
+        restaurants = Restaurant.objects.prefetch_related('menu_items__product').all()
         for order in orders:
             suggested_restaurants = []
             order_product_set = set()
-            for product_item in order.product_items.select_related('product').all():
+            for product_item in order.product_items.all():
                 order_product_set.add(product_item.product)
 
             for restaurant in restaurants:
                 restaurant_product_set = set()
-                for product_item in restaurant.menu_items.select_related('product').all():
+                for product_item in restaurant.menu_items.all():
                     restaurant_product_set.add(product_item.product)
 
                 if restaurant_product_set.union(order_product_set) == restaurant_product_set:
