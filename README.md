@@ -54,6 +54,12 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+Создайте файл `.env` и пропишите в нем переменные окружения:
+- `YANDEX_API_KEY` - ключ для API Yandex ([как получить](https://yandex.ru/dev/site/api/concepts/access.html));
+- `ROLLBAR_TOKEN` - токен для Rollbar ([получить здесь](https://rollbar.com/));
+- `ROLLBAR_PROFILE` (необязательно) - имя профиля Rollbar;
+- `DEBUG` (необязательно) - переключение режима Debug в Django (true/false).
+
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
 ```sh
