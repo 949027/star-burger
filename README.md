@@ -151,6 +151,24 @@ Parcel будет следить за файлами в каталоге `bundle
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `YANDEX_API_KEY` — токен Яндекс, получить [здесь](https://developer.tech.yandex.ru/services/).
 
+## Как быстро обновить код на сервере
+
+Создайте на сервере bash-скрипт, например `deploy_star_burger.sh` с содержимым:
+```commandline
+#!/bin/bash
+set -e
+cd {путь к корню проекта на сервере}
+source venv/bin/activate
+git pull
+pip install -r requirements.txt
+npm ci --dev
+python manage.py collectstatic --noinput
+python manage.py migrate
+systemctl restart star-burger.service
+echo 'Deploy completed!'
+```
+Запустив этот скрипт вы обновите код, установите зависимости, проведете миграции в БД.
+
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).
