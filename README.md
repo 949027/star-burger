@@ -156,19 +156,9 @@ Parcel будет следить за файлами в каталоге `bundle
 
 ## Как быстро обновить код на сервере
 
-Создайте на сервере bash-скрипт, например `deploy_star_burger.sh` с содержимым:
-```commandline
-#!/bin/bash
-set -e
-cd {путь к корню проекта на сервере}
-source venv/bin/activate
-git pull
-pip install -r requirements.txt
-npm ci --dev
-python manage.py collectstatic --noinput
-python manage.py migrate
-systemctl restart star-burger.service
-echo 'Deploy completed!'
+Выполните команду на сервере, находясь в корне проекта:
+```
+./deploy_star_burger.sh
 ```
 Запустив этот скрипт вы обновите код, установите зависимости, проведете миграции в БД.
 
