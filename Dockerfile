@@ -23,4 +23,4 @@ COPY . .
 
 FROM nginx:1.23.0-alpine AS nginx
 RUN rm /etc/nginx/conf.d/default.conf
-COPY production/nginx.conf /etc/nginx/conf.d/
+COPY docker_prod/nginx.conf /etc/nginx/conf.d/
