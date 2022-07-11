@@ -1,6 +1,7 @@
 version: '3.7'
 services:
   nginx:
+    container_name: nginx
     build:
       context: ..
       target: nginx
@@ -11,8 +12,9 @@ services:
     - 80:80
     depends_on:
     - db
-    restart: always    
+    restart: always
   db:
+    container_name: postgres
     image: postgres:14.4-alpine
     volumes:
       - postgres:/var/lib/postgresql/data/
@@ -23,15 +25,17 @@ services:
     env_file:
       - ./.env.prod
     restart: always
-      
+
   frontend:
+    container_name: node
     build:
-      context: .. 
+      context: ..
       target: parcel
     volumes:
       - ../bundles:/star-burger/bundles
 
   backend:
+    container_name: django
     build:
       context: ..
       target: django
