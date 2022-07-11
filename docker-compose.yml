@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+
+  db:
+    image: postgres:14.4-alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: "starburger"
+    ports:
+      - 5431:5432
+    env_file:
+      - ./.env
+      
+  frontend:
+    build: 
+      target: parcel
+    ports:
+      - 1234:1234
+    volumes:
+      - ./bundles:/star-burger/bundles
+      
+  backend:
+    build: 
+      target: django
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./bundles:/star-burger/bundles
+      - ./media:/star-burger/media
+    env_file:
+      - ./.env
+    depends_on: 
+      - db
+      
+volumes:
+  postgres:
