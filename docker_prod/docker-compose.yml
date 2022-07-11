@@ -1,0 +1,50 @@
+version: '3.7'
+services:
+  nginx:
+    build:
+      context: ..
+      target: nginx
+    volumes:
+      - ../staticfiles:/star-burger/staticfiles
+      - ../media:/star-burger/media
+    ports:
+    - 80:80
+    depends_on:
+    - db
+    restart: always    
+  db:
+    image: postgres:14.4-alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: "starburger"
+    expose:
+      - 5432
+    env_file:
+      - ./.env.prod
+    restart: always
+      
+  frontend:
+    build:
+      context: .. 
+      target: parcel
+    volumes:
+      - ../bundles:/star-burger/bundles
+
+  backend:
+    build:
+      context: ..
+      target: django
+    command: gunicorn -b 0.0.0.0:8080 star_burger.wsgi:application
+    expose:
+      - 8080
+    volumes:
+      - ../staticfiles:/star-burger/staticfiles
+      - ../bundles:/star-burger/bundles
+      - ../media:/star-burger/media
+    env_file:
+      - ./.env.prod
+    restart: always
+
+volumes:
+  postgres:
