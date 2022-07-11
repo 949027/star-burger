@@ -162,8 +162,59 @@ Parcel будет следить за файлами в каталоге `bundle
 ```
 Запустив этот скрипт вы обновите код, установите зависимости, проведете миграции в БД.
 
-## Ссылка на пример работающего сайта
-https://star-burgerok.site/
+## Docker
+- установите [Docker](https://docs.docker.com/engine/install/) и [Docker Compose](https://docs.docker.com/compose/install/).
+- скачайте проект:
+```commandline
+git clone https://github.com/949027/star-burger
+```
+### Dev-версия сайта:
+1) создать файл `.env` в каталоге `star_burger/` со следующими настройками:
+
+- `DEBUG` — дебаг-режим. Поставьте `False`.
+- `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+- `YANDEX_API_KEY` — токен Яндекс, получить [здесь](https://developer.tech.yandex.ru/services/).
+- `ROLLBAR_TOKEN` - токен для Rollbar ([получить здесь](https://rollbar.com/));
+- `DB_URL` - url с настройками БД PostreSQL вида: "postgres://USER:PASSWORD@HOST:PORT/NAME".
+- `POSTGRES_USER` - имя пользователя БД
+- `POSTGRES_PASSWORD` - пароль пользователя БД
+
+2) собрать и запустить контейнеры:
+```commandline
+docker-compose up -d
+```
+3) выполнить миграцию:
+```commandline
+docker exec django python manage.py migrate
+```
+4) перейти по адресу http://127.0.0.1:8000/
+
+### Prod-версия сайта:
+1) перейти в каталог `star_burger/docker_prod`;
+2) Cоздать файл `.env.prod` со следующими настройками:
+
+- `DEBUG` — дебаг-режим. Поставьте `False`.
+- `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+- `YANDEX_API_KEY` — токен Яндекс, получить [здесь](https://developer.tech.yandex.ru/services/).
+- `ROLLBAR_TOKEN` - токен для Rollbar ([получить здесь](https://rollbar.com/));
+- `DB_URL` - url с настройками БД PostreSQL вида: "postgres://USER:PASSWORD@HOST:PORT/NAME".
+- `POSTGRES_USER` - имя пользователя БД
+- `POSTGRES_PASSWORD` - пароль пользователя БД
+
+3) запустить деплойный скрипт:
+```commandline
+./deploy.sh
+```
+если для запуска нужны права на исполнение, можно воспользоваться:
+```commandline
+chmod a+x deploy.sh
+```
+4) выполнить миграцию:
+```commandline
+docker exec django python manage.py migrate
+```
 
 ## Цели проекта
 
@@ -172,3 +223,4 @@ https://star-burgerok.site/
 Где используется репозиторий:
 
 - Второй и третий урок [учебного модуля Django](https://dvmn.org/modules/django/)
+- Второй урок [учебного модуля Docker](https://dvmn.org/modules/docker-v2/)
